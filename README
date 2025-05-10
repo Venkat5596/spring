@@ -1,0 +1,8 @@
+# 1. Add all project files to staging
+git add .
+
+# 2. Commit them
+git commit -m "Initial commit with full Spring Boot project"
+
+# 3. Push to GitHub
+git push -u origin main

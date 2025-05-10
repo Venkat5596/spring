@@ -1,12 +1,30 @@
-
-
-
+version: '3'
 services:
+  spring-app:
+    image: spring-application:latest
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      - db
+    networks:
+      - app-network
+
   db:
     image: postgres
     ports:
       - "5432:5432"
-    restart: always
     environment:
-        POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: postgres
+    restart: always
+    networks:
+      - app-network
 
+networks:
+  app-network:
+    driver: bridge
