@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 @Service
 
 public class BookDto {
-    private String isbn;
+
     private String title;
-    private Author author;
+    private Long authorId;
 }

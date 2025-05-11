@@ -1,9 +1,11 @@
 package com.example.database_jpa.controller;
 
 
+import com.example.database_jpa.entities.Author;
 import com.example.database_jpa.entities.Book;
 import com.example.database_jpa.dto.BookDto;
 import com.example.database_jpa.dto.mapper.Mapper;
+import com.example.database_jpa.repo.AuthorRepo;
 import com.example.database_jpa.service.BookService;
 //import org.springframework.beans.factory.annotation.Autowired;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,10 +25,12 @@ public class BookController {
 
 
     private final Mapper<Book, BookDto> bookMapper;
+    private final AuthorRepo authorRepo;
 
-    private BookController(BookService bookService, Mapper<Book, BookDto> bookMapper) {
+    private BookController(BookService bookService, Mapper<Book, BookDto> bookMapper, AuthorRepo authorRepo) {
         this.bookService = bookService;
         this.bookMapper = bookMapper;
+        this.authorRepo = authorRepo;
     }
 
     @GetMapping
@@ -50,11 +54,23 @@ public class BookController {
     @PostMapping
     @Operation(summary = "Create new Book")
     public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+        // Map BookDto to Book entity
         Book book = bookMapper.mapToEntity(bookDto);
 
-        Book book1 = bookService.createBook(book);
-        return new ResponseEntity<BookDto>(bookMapper.mapToDto(book1), HttpStatus.CREATED);
+        // Fetch the Author by ID from the Author repository
+        Author author = authorRepo.findById(bookDto.getAuthorId())
+                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
+
+        // Set the fetched Author to the Book entity
+        book.setAuthor(author);
+
+        // Create the book using the service
+        Book savedBook = bookService.createBook(book);
+
+        // Return the response with the saved Book as DTO
+        return new ResponseEntity<>(bookMapper.mapToDto(savedBook), HttpStatus.CREATED);
     }
+
 
 
     @PutMapping("/{isbn}")

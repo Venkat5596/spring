@@ -3,7 +3,8 @@ services:
   spring-app:
     image: spring-application:latest
     ports:
-      - "8080:8080"
+      - "${PORT}:8080"
+
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/postgres
       SPRING_DATASOURCE_USERNAME: postgres

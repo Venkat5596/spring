@@ -1,22 +1,28 @@
 package com.example.database_jpa.service;
 
+import com.example.database_jpa.dto.BookDto;
+import com.example.database_jpa.entities.Author;
 import com.example.database_jpa.entities.Book;
 import com.example.database_jpa.exception.custom.InvalidIsbnException;
+import com.example.database_jpa.repo.AuthorRepo;
 import com.example.database_jpa.repo.BookRepo;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @Service
 public class BookService {
     private final BookRepo bookRepo;
+    private final AuthorRepo authorRepo;
 
-    public BookService(BookRepo bookRepo) {
+    public BookService(BookRepo bookRepo,AuthorRepo authorRepo) {
         this.bookRepo = bookRepo;
+        this.authorRepo = authorRepo;
     }
 
 
@@ -28,10 +34,17 @@ public class BookService {
 
 //    public Page<Book> getAll(Pageable pageable){
 //        return bookRepo.findAll(pageable);
-//    }
-    public Book createBook(Book book) {
-        return bookRepo.save(book);
-    }
+public Book createBook(Book book) {
+    // Fetch the Author from the database by ID
+    Author author = authorRepo.findById(book.getAuthor().getId())
+            .orElseThrow(() -> new IllegalArgumentException("Author not found"));
+
+    // Set the Author to the Book object
+    book.setAuthor(author);
+
+    // Save the Book to the database
+    return bookRepo.save(book);
+}
 
     public Book updateBook(String isbn, Book book) {
         if(book.getIsbn().equals(isbn)){
