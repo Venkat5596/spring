@@ -1,4 +1,4 @@
-package com.example.database_jpa.jwt;
+package com.example.database_jpa.jwt.login;
 
 import com.example.database_jpa.entities.Login;
 import com.example.database_jpa.repo.LoginRepo;
@@ -21,7 +21,7 @@ public class MyLoginService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         Optional<Login> login = loginRepo.findByUsername(username);
-        return login.map(LoginDetailsPrincipal::new)
+        return login.map(Login::new)
                 .orElseThrow(() -> new UsernameNotFoundException("User with username '" + username + "' not found."));
     }
 }

@@ -11,6 +11,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.example.database_jpa.jwt.Role.ADMIN;
+import static com.example.database_jpa.jwt.Role.MANAGER;
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
@@ -30,9 +33,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(req -> req
+                        .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/authors/**","/books/**").hasAnyRole(ADMIN.name(),MANAGER.name())
                         .requestMatchers("/login", "/register", "/web/login").permitAll()
                         .requestMatchers("/books").authenticated()
                         .anyRequest().authenticated())
+
                 .httpBasic(httpBasic -> httpBasic.disable())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

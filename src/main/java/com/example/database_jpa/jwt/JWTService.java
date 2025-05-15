@@ -1,5 +1,6 @@
 package com.example.database_jpa.jwt;
 
+import com.example.database_jpa.entities.Login;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -22,12 +23,12 @@ public class JWTService {
     @Value("${spring.jwt.expireMs}")
     private long expireMs;
 
-    public String generateToken(String username) {
+    public String generateToken(Login username) {
         Map<String, Object> claims = new HashMap<>();
 
         return Jwts.builder()
                 .claims(claims)
-                .subject(username)
+                .subject(username.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expireMs))
                 .signWith(getKey())

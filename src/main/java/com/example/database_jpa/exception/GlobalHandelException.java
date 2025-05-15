@@ -38,5 +38,12 @@ return ResponseEntity.badRequest().body(e.getMessage());
         log.info("Author not found log");
         return new ResponseEntity<>(a.getMessage()+" : Global",HttpStatus.BAD_REQUEST);
     }
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<String> handleAuthenticationException(BadCredentialsException ex) {
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .body("Invalid username or password");
+    }
+
 
 }
