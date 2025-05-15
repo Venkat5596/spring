@@ -1,10 +1,12 @@
 package com.example.database_jpa.controller;
 
 
+import com.example.database_jpa.dto.CreateBookDto;
 import com.example.database_jpa.entities.Author;
 import com.example.database_jpa.entities.Book;
 import com.example.database_jpa.dto.BookDto;
 import com.example.database_jpa.dto.mapper.Mapper;
+import com.example.database_jpa.exception.custom.AuthorNotFound;
 import com.example.database_jpa.repo.AuthorRepo;
 import com.example.database_jpa.service.BookService;
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -53,13 +55,13 @@ public class BookController {
 
     @PostMapping
     @Operation(summary = "Create new Book")
-    public ResponseEntity<BookDto> createBook(@RequestBody BookDto bookDto) {
+    public ResponseEntity<BookDto> createBook(@RequestBody CreateBookDto createBookDto) {
         // Map BookDto to Book entity
-        Book book = bookMapper.mapToEntity(bookDto);
+        Book book = bookMapper.mapToEntity(createBookDto);
 
         // Fetch the Author by ID from the Author repository
-        Author author = authorRepo.findById(bookDto.getAuthorId())
-                .orElseThrow(() -> new IllegalArgumentException("Author not found"));
+        Author author = authorRepo.findById(book.getAuthor().getId())
+                .orElseThrow(() -> new AuthorNotFound("Author not found"));
 
         // Set the fetched Author to the Book entity
         book.setAuthor(author);

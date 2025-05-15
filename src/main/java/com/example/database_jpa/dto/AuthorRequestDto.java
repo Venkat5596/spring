@@ -1,5 +1,7 @@
 package com.example.database_jpa.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.*;
@@ -11,10 +13,12 @@ import lombok.*;
 @Setter
 public class AuthorRequestDto {
 
-    @NotBlank
-    private String id;
+//    @NotBlank
+//    private String id;
 
-
+    @NotBlank(message = "name must required")
     private String name;
+    @Min(10)
+    @Max(100)
     private String age;
 }

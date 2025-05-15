@@ -18,8 +18,8 @@ public class AuthorMapper {
 
     public static Author DtoToAuthor(AuthorRequestDto authorRepo){
         Author author = new Author();
-        if (authorRepo.getId() != null && !authorRepo.getId().isBlank()) {
-            author.setId(Long.valueOf(authorRepo.getId()));
+        if (authorRepo.getName() != null && !authorRepo.getName().isBlank()) {
+           // author.setId(Long.valueOf(authorRepo.getId()));
         }
         author.setAge(Integer.valueOf(authorRepo.getAge()));
         author.setName(authorRepo.getName());

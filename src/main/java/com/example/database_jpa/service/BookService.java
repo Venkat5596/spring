@@ -1,17 +1,13 @@
 package com.example.database_jpa.service;
 
-import com.example.database_jpa.dto.BookDto;
 import com.example.database_jpa.entities.Author;
 import com.example.database_jpa.entities.Book;
 import com.example.database_jpa.exception.custom.InvalidIsbnException;
 import com.example.database_jpa.repo.AuthorRepo;
 import com.example.database_jpa.repo.BookRepo;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -36,6 +32,8 @@ public class BookService {
 //        return bookRepo.findAll(pageable);
 public Book createBook(Book book) {
     // Fetch the Author from the database by ID
+
+    
     Author author = authorRepo.findById(book.getAuthor().getId())
             .orElseThrow(() -> new IllegalArgumentException("Author not found"));
 
@@ -75,4 +73,11 @@ public Book createBook(Book book) {
         }).orElseThrow(() -> new InvalidIsbnException("invalid isbn"));
     }
 
+
+
+    public boolean existsByAuthorId(Long id) {
+        return bookRepo.findByAuthor_Id(id);
+
+
+    }
 }

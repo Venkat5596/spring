@@ -41,10 +41,17 @@ authorService.saveAuthor(authorRequestDto);
         return ResponseEntity.ok(response.stream().toList());
     }
 
-    @GetMapping("/id")
+    @GetMapping("/{id}")
     @Operation(summary = "Get Author by Id")
     public ResponseEntity<AuthorRepoDto> FindOne(@PathVariable("id") Long id){
         Optional<Author> foundAuthor = authorService.findOne(id);
         return foundAuthor.map(author -> ResponseEntity.ok(AuthorMapper.AuthorToDto(author))).orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete Author by Id")
+    public ResponseEntity<String> deleteAuthor(@PathVariable("id") Long id){
+        authorService.deleteAuthor(id);
+        return ResponseEntity.ok("Deleted");
     }
 }

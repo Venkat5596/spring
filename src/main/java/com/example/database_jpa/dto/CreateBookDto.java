@@ -1,21 +1,25 @@
 package com.example.database_jpa.dto;
 
-import com.example.database_jpa.entities.Author;
-import com.example.database_jpa.repo.AuthorRepo;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.stereotype.Service;
 
 
-@Data
+@Service
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Service
+@Data
+@Getter
+@Setter
+public class CreateBookDto
+{
 
-public class BookDto {
-
+    @NotBlank
     private String title;
+
+    @NotNull
     private Long authorId;
 
-    private AuthorRepoDto authorRepoDto;
 }
