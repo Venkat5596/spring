@@ -50,4 +50,9 @@ public class LoginServiceImpl implements LoginService {
                 login.getRole().name()
         );
     }
+
+    @Override
+    public Login findByUsername(String username) {
+        return null;
+    }
 }

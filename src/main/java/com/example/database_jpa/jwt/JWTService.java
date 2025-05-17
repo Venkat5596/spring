@@ -1,6 +1,7 @@
 package com.example.database_jpa.jwt;
 
 import com.example.database_jpa.entities.Login;
+import com.example.database_jpa.jwt.login.LoginRequestDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
@@ -23,12 +24,13 @@ public class JWTService {
     @Value("${spring.jwt.expireMs}")
     private long expireMs;
 
-    public String generateToken(Login username) {
+    public String generateToken(Login login) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("role", login.getRole());
+     //   claims.put("permissions", loginRequestDto.getPermissions()); // Store authorities
 
-        return Jwts.builder()
-                .claims(claims)
-                .subject(username.getUsername())
+        return Jwts.builder().claims(claims)
+                .subject(login.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expireMs))
                 .signWith(getKey())
@@ -38,6 +40,9 @@ public class JWTService {
     private SecretKey getKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+    public String extractRole(String token) {
+        return extractClaim(token, claims -> claims.get("role", String.class));
     }
 
     private <T> T extractClaim(String token, java.util.function.Function<Claims, T> claimsResolver) {

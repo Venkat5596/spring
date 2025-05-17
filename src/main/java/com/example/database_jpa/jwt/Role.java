@@ -39,15 +39,12 @@ public enum Role {
 
     public List<SimpleGrantedAuthority> getAuthorities() {
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-        // Add permissions
-        authorities.addAll(getPermissions().stream()
-                .map(permission -> new SimpleGrantedAuthority(permission.getPermission()))
-                .toList());
-
-        // Add role
         authorities.add(new SimpleGrantedAuthority("ROLE_" + this.name()));
-
-        return authorities;
+        getPermissions().forEach(permission ->
+                authorities.add(new SimpleGrantedAuthority(permission.getPermission()))
+        );
+        return Collections.unmodifiableList(authorities);
     }
+
+
 }

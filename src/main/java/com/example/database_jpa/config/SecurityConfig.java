@@ -1,12 +1,15 @@
 package com.example.database_jpa.config;
 
 import com.example.database_jpa.jwt.JwtFilter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -20,6 +23,7 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
 
+    @Autowired
     public SecurityConfig(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
@@ -29,20 +33,80 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(15);
     }
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(csrf -> csrf.disable())
-                .authorizeHttpRequests(req -> req
-                        .requestMatchers("/swagger-ui/**", "/swagger-resources/**", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/authors/**","/books/**").hasAnyRole(ADMIN.name(),MANAGER.name())
-                        .requestMatchers("/login", "/register", "/web/login").permitAll()
-                        .requestMatchers("/books").authenticated()
-                        .anyRequest().authenticated())
 
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+
+
+        private static final String[] SWAGGER_PATHS = {
+                "/swagger-ui/**",
+                "/v3/api-docs/**",
+                "/swagger-ui.html",
+                "/swagger-resources/**",
+                "/webjars/**",
+                "/configuration/**",
+                "/web/authors/**"
+        };
+
+        private static final String[] PUBLIC_PATHS = {
+                "/register",
+                "/web/login",
+                "/api/web/login",
+                "/WEB-INF/jsp/**"
+
+
+        };
+
+    private static final String[] PROTECTED_PATHS = {
+            "/books/**",
+            "/authors/**",
+            "/web/authors/**",
+            "/web/books/**",
+            "/api/web/index"
+    };
+
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                )
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(SWAGGER_PATHS).permitAll()
+                        .requestMatchers(PUBLIC_PATHS).permitAll()
+                        .requestMatchers("/WEB-INF/jsp/**").permitAll()
+                        .requestMatchers("/favicon.ico").permitAll()
+                        .requestMatchers(PROTECTED_PATHS).hasAnyRole("ADMIN", "USER")
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/api/web/login")
+                        //.loginProcessingUrl("/api/web/login")
+                        .defaultSuccessUrl("/api/web/index", true)
+                        .failureUrl("/web/login?error=true")
+                        .permitAll()
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .logoutSuccessUrl("/web/login")
+                        .permitAll()
+                )
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
+
+//    private static final String[] PUBLIC_PATHS = {
+//            "/register",
+//            "/web/login",
+//            "/api/web/login",
+//            "/WEB-INF/jsp/**",
+//            "/login",
+//            "/css/**",
+//            "/js/**",
+//            "/images/**"
+//    };
+
+
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration auth) throws Exception {
