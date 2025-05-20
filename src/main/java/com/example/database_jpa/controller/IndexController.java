@@ -7,7 +7,7 @@ import com.example.database_jpa.jwt.login.LoginResponseDto;
 import com.example.database_jpa.jwt.login.service.LoginService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.security.access.prepost.PreAuthorize;
+//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -21,10 +21,12 @@ public class IndexController {
 
     private final LoginService loginService;
     private final JWTService jwtService;
+    //private final LoginService loginService1;
 
     public IndexController(LoginService loginService, JWTService jwtService) {
         this.loginService = loginService;
         this.jwtService = jwtService;
+        //this.loginService1 = loginService1;
     }
 
     @GetMapping("/login")
@@ -40,6 +42,8 @@ public class IndexController {
             model.addAttribute("error", "Invalid credentials");
             return "login";
         }
+
+
 
         // Retrieve user details from DB
         Login login = loginService.findByUsername(loginRequest.getUsername());
@@ -62,7 +66,21 @@ public class IndexController {
         }
         return "login";
 
-    }}
+    }
+
+    @GetMapping("/register")
+    public String registerPage(){
+        return "register";
+    }
+
+@PostMapping("/register")
+    public String register(@ModelAttribute Login login){
+        Login saved = loginService.saveLogin(login);
+
+        return "redirect:/api/web/login";
+    }
+
+}
 
 //package com.example.database_jpa.controller;
 //

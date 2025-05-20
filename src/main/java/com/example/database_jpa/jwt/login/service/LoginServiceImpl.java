@@ -13,8 +13,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+//import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +56,9 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public Login findByUsername(String username) {
-        return null;
+    public Login findByUsername(String username) throws UsernameNotFoundException {
+        Optional<Login> login = loginRepo.findByUsername(username);
+        return login.map(Login::new)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username '" + username + "' not found."));
     }
 }
