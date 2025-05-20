@@ -39,7 +39,7 @@ jobs:
       - name : SetUp Java
         uses : action/setup-java@V3
         with :
-          distribution : 'termurin'
+          distribution : 'temurin'
           java-version : '17'
 
       - name : Build Project
@@ -57,7 +57,7 @@ jobs:
         - name : Download Artifacts From Build Job
           uses : actions/download-artifacts@V2
           with:
-            name: Spring_Boot
+            name: Spring Boot
         - name: Deploy to Azure Web App
           uses: azure/webapps-deploy@v2
           with:
