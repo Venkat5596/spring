@@ -1,0 +1,41 @@
+name : deploy_in_azure_spring_boot
+
+on:
+  push:
+    branches:
+      - spring
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - name : CheckOut Source
+        uses : action/checkout@V3
+      - name : SetUp Java
+        uses : action/setup-java@V3
+        with :
+          distribution : 'temurin'
+          java-version : '17'
+
+      - name : Build Project
+        run : mvn clean install -DskipTests
+      - name : Upload Artifact for deployment
+        uses : actions/upload-artifact@V2
+        with :
+          name : Spring Boot
+          path : ${{github.workspace}}/target/*.war
+
+  deploy :
+    runs-on: windows-latest
+    needs : build
+    steps :
+        - name : Download Artifacts From Build Job
+          uses : actions/download-artifacts@V2
+          with:
+            name: Spring_Boot
+        - name: Deploy to Azure Web App
+          uses: azure/webapps-deploy@v2
+          with:
+            app-name: 'Spring_Boot'
+            publish-profile: ${{secrets.azureWebAppPublishProfile}}
+            package: '*.war'
+

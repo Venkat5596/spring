@@ -20,6 +20,9 @@
 
     <properties>
         <java.version>17</java.version>
+        <azure.subscription.id>your-subscription-id</azure.subscription.id>
+        <azure.resource.group>your-resource-group</azure.resource.group>
+        <azure.app.name>your-app-name</azure.app.name>
     </properties>
 
     <dependencies>
@@ -32,6 +35,8 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+
+
 
         <!-- Databases -->
         <dependency>
@@ -131,8 +136,26 @@
     <build>
         <finalName>SpringBootProject</finalName>
         <plugins>
+            <plugin>
+                <groupId>com.microsoft.azure</groupId>
+                <artifactId>azure-spring-apps-maven-plugin</artifactId>
+                <version>1.18.0</version>
+                <configuration>
+                    <subscriptionId>${azure.subscription.id}</subscriptionId>
+                    <resourceGroup>${azure.resource.group}</resourceGroup>
+                    <appName>${azure.app.name}</appName>
+                    <deployment>
+                        <cpu>1</cpu>
+                        <memoryInGB>2</memoryInGB>
+                        <instanceCount>1</instanceCount>
+                        <runtimeVersion>Java 17</runtimeVersion>
+                    </deployment>
+                </configuration>
+            </plugin>
             <!-- Compiler Plugin -->
             <plugin>
+
+
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
@@ -150,7 +173,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>com.example.database_jpa.SpringBootProjectApplication</mainClass>
+                    <mainClass>com.example.spring_boot.SpringBootProjectApplication</mainClass>
                     <layout>WAR</layout>
                     <excludes>
                         <exclude>

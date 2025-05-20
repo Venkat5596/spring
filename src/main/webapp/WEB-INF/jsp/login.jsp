@@ -8,17 +8,29 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>Title</title>
+    <title>LOGIN</title>
 </head>
-<body>
+<body style="text-align: center">
 
 <form action="${pageContext.request.contextPath}/api/web/login" method="post">
     <label>Username:</label>
-    <input type="text" name="username" required>
+    <label>
+        <input type="text" name="username" required>
+    </label>
+    <br>
+
     <label>Password:</label>
-    <input type="password" name="password" required>
-    <input type="text" name="role" value="role">
+
+    <label>
+        <input type="password" name="password" required>
+    </label>
+    <br>
+<%--    <input type="text" name="role" value="role">--%>
     <button type="submit">Login</button>
 </form>
+
+<h4>If you are not register</h4>
+
+<input type="button" value="REGISTER" onclick="window.location.href='${pageContext.request.contextPath}/api/web/register'">
 </body>
 </html>
