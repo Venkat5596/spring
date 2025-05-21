@@ -1,66 +1,45 @@
-# This workflow will build and push a Docker container to an Azure Web App when a commit is pushed to your default branch.
-#
-# This workflow assumes you have already created the target Azure App Service web app.
-# For instructions see https://docs.microsoft.com/en-us/azure/app-service/quickstart-custom-container?tabs=dotnet&pivots=container-linux
-#
-# To configure this workflow:
-#
-# 1. Download the Publish Profile for your Azure Web App. You can download this file from the Overview page of your Web App in the Azure Portal.
-#    For more information: https://docs.microsoft.com/en-us/azure/app-service/deploy-github-actions?tabs=applevel#generate-deployment-credentials
-#
-# 2. Create a secret in your repository named AZURE_WEBAPP_PUBLISH_PROFILE, paste the publish profile contents as the value of the secret.
-#    For instructions on obtaining the publish profile see: https://docs.microsoft.com/azure/app-service/deploy-github-actions#configure-the-github-secret
-#
-# 3. Create a GitHub Personal access token with "repo" and "read:packages" permissions.
-#
-# 4. Create three app settings on your Azure Web app:
-#       DOCKER_REGISTRY_SERVER_URL: Set this to "https://ghcr.io"
-#       DOCKER_REGISTRY_SERVER_USERNAME: Set this to the GitHub username or organization that owns the repository
-#       DOCKER_REGISTRY_SERVER_PASSWORD: Set this to the value of your PAT token from the previous step
-#
-# 5. Change the value for the AZURE_WEBAPP_NAME.
-#
-# For more information on GitHub Actions for Azure: https://github.com/Azure/Actions
-# For more information on the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# For more samples to get started with GitHub Action workflows to deploy to Azure: https://github.com/Azure/actions-workflow-samples
-
-name : deploy_in_azure_spring_boot
+name: Build and Deploy Spring Boot with Docker
 
 on:
   push:
     branches:
       - spring
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME: ghcr.io/venkat5596/spring:latest
+
 jobs:
-  build:
-    runs-on: windows-latest
+  build-and-push:
+    runs-on: ubuntu-latest
     steps:
-      - name : CheckOut Source
-        uses : action/checkout@V3
-      - name : SetUp Java
-        uses : action/setup-java@V3
-        with :
-          distribution : 'temurin'
-          java-version : '17'
+      - name: Checkout source
+        uses: actions/checkout@v3
 
-      - name : Build Project
-        run : mvn clean install -DskipTests
-      - name : Upload Artifact for deployment
-        uses : actions/upload-artifact@V2
-        with :
-          name : Spring Boot
-          path : ${{github.workspace}}/target/*.war
-
-  deploy :
-    runs-on: windows-latest
-    needs : build
-    steps :
-      - name : Download Artifacts From Build Job
-        uses : actions/download-artifacts@V2
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          name: Spring Boot
-      - name: Deploy to Azure Web App
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.IMAGE_NAME }}
+
+  deploy-to-azure:
+    runs-on: ubuntu-latest
+    needs: build-and-push
+    steps:
+      - name: Deploy to Azure Web App for Containers
         uses: azure/webapps-deploy@v2
         with:
           app-name: 'Spring_Boot'
-          publish-profile: ${{secrets.azureWebAppPublishProfile}}
-          package: '*.war'
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: ${{ env.IMAGE_NAME }}
