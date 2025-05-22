@@ -32,7 +32,7 @@
         <label>ADMIN</label>
     <br>
         <label>
-            <input type="checkbox" name="role" value="USER" required>
+            <input type="checkbox" name="role" value="USER" >
         </label>
         <label> USER </label>
     </div>
