@@ -15,26 +15,29 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
+          distribution: temurin
           java-version: '17'
 
       - name: Build Spring Boot application
         run: mvn clean package
 
-      - name: Deploy to Azure VM
+      - name: List build artifacts
+        run: ls -la target
+
+      - name: Deploy to Azure VM via SCP
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
-          source: "target/myapp.jar"
+          source: "/target/*.war"    # Verify that this file exists!
           target: "/home/azure/"
 
-      - name: Start Spring Boot application
+      - name: Start Spring Boot application via SSH
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           script: |
-            nohup java -jar /home/azure/myapp.jar > /home/azure/app.log 2>&1 &
+            nohup java -jar /home/azure/*.war > /home/azure/app.log 2>&1 &
