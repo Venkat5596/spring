@@ -50,4 +50,4 @@ jobs:
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           script: |
-              nohup /usr/bin/java -jar /home/azure/SpringBootProject.war > /home/azure/app.log 2>&1 &
+              nohup java -jar /home/azure/SpringBootProject.war > /home/azure/app.log 2>&1 &
