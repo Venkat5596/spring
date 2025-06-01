@@ -25,10 +25,15 @@ jobs:
         run: mvn clean package
 
       - name: List build artifacts
-        run: ls -la target
+        run: |
+              ls -la target
+              echo "Listing contents of target directory:"
+
 
       - name: Check WAR file size
-        run: du -h target/SpringBootProject.war || true
+        run: |
+             echo "Checking file sizes:"
+             du -h target/SpringBootProject.war || true
 
       - name: Deploy WAR to Azure VM via SCP
         uses: appleboy/scp-action@master  # or try pinning a specific version
