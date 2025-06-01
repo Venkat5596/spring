@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           source: "target/myapp.jar"
-          target: "/home/azureuser/"
+          target: "/home/azure/"
 
       - name: Start Spring Boot application
         uses: appleboy/ssh-action@master
@@ -37,4 +37,4 @@ jobs:
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           script: |
-            nohup java -jar /home/azureuser/myapp.jar > /home/azureuser/app.log 2>&1 &
+            nohup java -jar /home/azure/myapp.jar > /home/azure/app.log 2>&1 &
