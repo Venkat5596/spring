@@ -30,7 +30,7 @@ jobs:
           host: ${{ secrets.AZURE_VM_IP }}
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
-          source: "/target/*.war"    # Verify that this file exists!
+          source: "target/*.war"    # Verify that this file exists!
           target: "/home/azure/"
 
       - name: Start Spring Boot application via SSH
