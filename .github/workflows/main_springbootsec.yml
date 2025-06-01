@@ -26,14 +26,14 @@ jobs:
 
       - name: List build artifacts
         run: |
-              ls -la target
-              echo "Listing contents of target directory:"
+          ls -la target
+          echo "Listing contents of target directory:"
 
 
       - name: Check WAR file size
         run: |
-             echo "Checking file sizes:"
-             du -h target/SpringBootProject.war || true
+          echo "Checking file sizes:"
+          du -h target/SpringBootProject.war || true
 
       - name: Deploy WAR to Azure VM via SCP
         uses: appleboy/scp-action@master  # or try pinning a specific version
@@ -51,4 +51,4 @@ jobs:
           username: ${{ secrets.AZURE_VM_USER }}
           key: ${{ secrets.AZURE_VM_SSH_KEY }}
           script: |
-            nohup java -jar /home/azure/SpringBootProject.war > /home/azure/app.log 2>&1 &
+              nohup /usr/bin/java -jar /home/azure/SpringBootProject.war > /home/azure/app.log 2>&1 &
